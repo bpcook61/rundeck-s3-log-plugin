@@ -110,6 +110,12 @@ public class S3LogFileStoragePlugin implements ExecutionFileStoragePlugin, AWSCr
             defaultValue = "false")
     private boolean pathStyle;
 
+    @PluginProperty(
+            title = "Use Server Side Encryption",
+            description = "Use of Server Side Encryption for storing objects. Default: false",
+            defaultValue = "false")
+    private boolean useSSE;
+
     protected String expandedPath;
 
     public S3LogFileStoragePlugin() {
@@ -415,6 +421,9 @@ public class S3LogFileStoragePlugin implements ExecutionFileStoragePlugin, AWSCr
         }
         metadata.setLastModified(lastModified);
         metadata.setContentLength(length);
+        if (isUseSSEUsed()) {
+            metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+        }
         return metadata;
     }
 
@@ -546,6 +555,12 @@ public class S3LogFileStoragePlugin implements ExecutionFileStoragePlugin, AWSCr
 
     public void setUseSignatureV2(boolean useSigV2) {
         this.useSigV2 = useSigV2;
+    }
+
+    public boolean isUseSSEUsed() { return useSSE; }
+
+    public void setUseSSE(boolean useSSE) {
+        this.useSSE = useSSE;
     }
 
     protected String resolvedFilepath(final String path, final String filetype) {
